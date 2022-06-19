@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+/* import { ActivatedRoute } from '@angular/router'; */
 
 @Component({
   selector: 'app-dashboard',
@@ -7,6 +8,9 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+
+  offerForm!: FormGroup;
+
   cars2 = [
     {
       id: 0,
@@ -37,17 +41,33 @@ export class DashboardComponent implements OnInit {
   currentCar: any;
 
   constructor(
-    private activatedRoute: ActivatedRoute
+    /* private activatedRoute: ActivatedRoute */
+    private formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
-    const carId = this.activatedRoute.snapshot.paramMap.get('id');
+/*     const carId = this.activatedRoute.snapshot.paramMap.get('id');
     setTimeout(() => {
       this.currentCar = this.cars2.find(el => el.id === +<string>carId)
-    }, 1000);
-
-
-
+    }, 1000); */
+    this.initOfferForm();
   }
 
+  initOfferForm(): void {
+    this.offerForm = this.formBuilder.group({
+      title: ['', [Validators.required, Validators.maxLength(100)]],
+      brand: '',
+      model: '',
+      description: '',
+      price: 0
+    });
+  }
+
+/*   onSubmitOfferForm(form: NgForm): void {
+    console.log(form.value);
+  }
+ */
+  onSubmitOfferForm(): void {
+    console.log(this.offerForm.value);
+  }
 }
