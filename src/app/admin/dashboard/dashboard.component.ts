@@ -11,7 +11,9 @@ export class DashboardComponent implements OnInit {
 
   offerForm!: FormGroup;
 
-  cars2 = [
+  offers: any[] = [];
+
+  /* cars2 = [
     {
       id: 0,
       brand: 'Renault',
@@ -37,8 +39,8 @@ export class DashboardComponent implements OnInit {
       color: 'green'
     }
   ];
-
-  currentCar: any;
+ */
+/*   currentCar: any; */
 
   constructor(
     /* private activatedRoute: ActivatedRoute */
@@ -68,6 +70,9 @@ export class DashboardComponent implements OnInit {
   }
  */
   onSubmitOfferForm(): void {
-    console.log(this.offerForm.value);
+    /* console.log(this.offerForm.value); */
+    this.offers.push(this.offerForm.value);
+    this.offerForm.reset();
+    console.log(this.offers);
   }
 }

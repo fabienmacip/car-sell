@@ -1,5 +1,5 @@
 <div class="container py-5">
-  <div class="row">
+  <div class="row mb-5">
     <div class="col-12 col-md-10 col-col-lg-8 col-xl-6 mx-auto">
       <div class="bg-white shadow rounded p-4">
         <h1 class="display-6 text-dark">Créer une annonce</h1>
@@ -32,6 +32,35 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+      <div class="bg-white shadow p-4 rounded">
+        <h2 class="display-6 text-dark">Annonces enregistrées</h2>
+        <hr class="bg-dark-mb-5">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Titre</th>
+              <th scope="col">Voiture</th>
+              <th scope="col">Prix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let offer of offers; let i = index">
+              <th>{{ i }}</th>
+              <td>{{ offer.title }}</td>
+              <td>{{ offer.brand + ' ' + offer.model }}</td>
+              <td>{{ offer.price }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 <!-- METHODE TEMPLATE -->
