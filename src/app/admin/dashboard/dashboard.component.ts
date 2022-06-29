@@ -57,6 +57,7 @@ export class DashboardComponent implements OnInit {
 
   initOfferForm(): void {
     this.offerForm = this.formBuilder.group({
+      index: [0],
       title: ['', [Validators.required, Validators.maxLength(100)]],
       brand: '',
       model: '',
@@ -71,8 +72,28 @@ export class DashboardComponent implements OnInit {
  */
   onSubmitOfferForm(): void {
     /* console.log(this.offerForm.value); */
-    this.offers.push(this.offerForm.value);
+    const offerIndex = this.offerForm.value.index;
+    let offer = this.offerForm.value;
+    if(offerIndex == null || offerIndex == undefined){
+      delete offer.index;
+      this.offers.push(offer);
+    }
+    else {
+      delete offer.index;
+      this.offers[offerIndex] = offer;
+    }
+
+    //this.offers.push(this.offerForm.value);
     this.offerForm.reset();
     console.log(this.offers);
   }
+
+  onEditOffer(offer: any, index:number): void{
+    this.offerForm.setValue({...offer, index});
+  }
+
+  onDeleteOffer(index: number): void{
+    this.offers.splice(index, 1);
+  }
+
 }
