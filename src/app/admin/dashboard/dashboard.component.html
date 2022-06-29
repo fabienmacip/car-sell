@@ -12,7 +12,7 @@
           </div>
           <div class="form-group mb-3">
             <label for="offerBrandInput">Marque</label>
-            <input type="text" id="offerBrandInput" class="form-control" formControlName="brand">
+            <input type="text" id="offerBrandInput" class="form-control" formControlName="brand" appUppercaseInput>
           </div>
           <div class="form-group mb-3">
             <label for="offerModelInput">Modèle</label>
@@ -52,9 +52,9 @@
           <tbody>
             <tr *ngFor="let offer of offers; let i = index">
               <th>{{ i }}</th>
-              <td>{{ offer.title }}</td>
+              <td>{{ offer.title | firstCharUppercase }}</td>
               <td>{{ offer.brand + ' ' + offer.model }}</td>
-              <td>{{ offer.price }}</td>
+              <td>{{ offer.price | currency:'EUR':'symbol':'4.2-2':'fr' }}</td>
               <td>
                 <button class="btn btn-primary" type="button" (click)="onEditOffer(offer, i)">Modifier</button>
                 <button class="btn btn-danger" type="button" (click)="onDeleteOffer(i)">Supprimer</button>
