@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Offer } from 'src/app/interfaces/offer';
+import { OffersService } from 'src/app/services/offers.service';
 /* import { ActivatedRoute } from '@angular/router'; */
 
 @Component({
@@ -11,7 +13,7 @@ export class DashboardComponent implements OnInit {
 
   offerForm!: FormGroup;
 
-  offers: any[] = [];
+  offers: Offer[] = [];
 
   /* cars2 = [
     {
@@ -44,7 +46,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     /* private activatedRoute: ActivatedRoute */
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private offersService: OffersService
   ) { }
 
   ngOnInit(): void {
@@ -53,6 +56,7 @@ export class DashboardComponent implements OnInit {
       this.currentCar = this.cars2.find(el => el.id === +<string>carId)
     }, 1000); */
     this.initOfferForm();
+    this.offers = this.offersService.getOffers();
   }
 
   initOfferForm(): void {
@@ -76,11 +80,13 @@ export class DashboardComponent implements OnInit {
     let offer = this.offerForm.value;
     if(offerIndex == null || offerIndex == undefined){
       delete offer.index;
-      this.offers.push(offer);
+      //this.offers.push(offer);
+      this.offers = this.offersService.createOffer(offer);
     }
     else {
       delete offer.index;
-      this.offers[offerIndex] = offer;
+      //this.offers[offerIndex] = offer;
+      this.offers = this.offersService.editOffer(offer, offerIndex);
     }
 
     //this.offers.push(this.offerForm.value);
@@ -88,12 +94,13 @@ export class DashboardComponent implements OnInit {
     console.log(this.offers);
   }
 
-  onEditOffer(offer: any, index:number): void{
+  onEditOffer(offer: Offer, index:number): void{
     this.offerForm.setValue({...offer, index});
   }
 
   onDeleteOffer(index: number): void{
-    this.offers.splice(index, 1);
+    //this.offers.splice(index, 1);
+    this.offers = this.offersService.deleteOffer(index);
   }
 
 }
