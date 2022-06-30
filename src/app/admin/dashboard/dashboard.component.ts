@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { Offer } from 'src/app/interfaces/offer';
 import { OffersService } from 'src/app/services/offers.service';
 /* import { ActivatedRoute } from '@angular/router'; */
@@ -9,11 +10,13 @@ import { OffersService } from 'src/app/services/offers.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
   offerForm!: FormGroup;
 
   offers: Offer[] = [];
+
+  subscription!: Subscription;
 
   /* cars2 = [
     {
@@ -56,12 +59,32 @@ export class DashboardComponent implements OnInit {
       this.currentCar = this.cars2.find(el => el.id === +<string>carId)
     }, 1000); */
     this.initOfferForm();
-    this.offers = this.offersService.getOffers();
+    //this.offers = this.offersService.getOffers();
+    this.subscription = this.offersService.offersSubject
+    .subscribe({
+      next: (offers: Offer[]) => {
+
+        this.offers = offers
+      },
+/*       complete: () => {
+        console.log('Observable complété');
+      }, */
+      error: (error) => { console.error(error);}
+    });
+
+    this.offersService.getOffers();
+    /* .then((offers: Offer[]) => {
+      this.offers = offers;
+    }).catch((error) => {
+      console.error(error);
+    }).finally(() => {
+      console.log('C\'est ok');
+    }); */
   }
 
   initOfferForm(): void {
     this.offerForm = this.formBuilder.group({
-      index: [0],
+      id: [null],
       title: ['', [Validators.required, Validators.maxLength(100)]],
       brand: '',
       model: '',
@@ -76,17 +99,18 @@ export class DashboardComponent implements OnInit {
  */
   onSubmitOfferForm(): void {
     /* console.log(this.offerForm.value); */
-    const offerIndex = this.offerForm.value.index;
+    const offerId = this.offerForm.value.id;
     let offer = this.offerForm.value;
-    if(offerIndex == null || offerIndex == undefined){
+    if(!offerId || offerId && offerId === ''){ // CREATION
       delete offer.index;
       //this.offers.push(offer);
-      this.offers = this.offersService.createOffer(offer);
+      this.offersService.createOffer(offer)
+      .catch(console.error);
     }
-    else {
+    else { // MODIFICATION
       delete offer.index;
       //this.offers[offerIndex] = offer;
-      this.offers = this.offersService.editOffer(offer, offerIndex);
+      this.offersService.editOffer(offer, offerId).catch(console.error);
     }
 
     //this.offers.push(this.offerForm.value);
@@ -94,13 +118,27 @@ export class DashboardComponent implements OnInit {
     console.log(this.offers);
   }
 
-  onEditOffer(offer: Offer, index:number): void{
-    this.offerForm.setValue({...offer, index});
+  onEditOffer(offer: Offer): void{
+    this.offerForm.setValue({
+      id: offer.id ? offer.id : '',
+      title: offer.title ? offer.title : '',
+      brand: offer.brand ? offer.brand : '',
+      model: offer.model ? offer.model : '',
+      price : offer.price ? offer.price : 0,
+      description: offer.description ? offer.description : ''
+    });
   }
 
-  onDeleteOffer(index: number): void{
+  onDeleteOffer(offerId?: string): void{
     //this.offers.splice(index, 1);
-    this.offers = this.offersService.deleteOffer(index);
+    if(offerId){
+      this.offersService.deleteOffer(offerId).catch(console.error);
+    } else {
+      console.error('Un id doit être fourni pour effacer');
+    }
   }
 
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 }
