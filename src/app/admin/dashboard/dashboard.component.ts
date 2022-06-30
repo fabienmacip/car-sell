@@ -18,6 +18,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   subscription!: Subscription;
 
+  currentOfferPhotoFile!: any;
+  currentOfferPhotoUrl!: string;
+
   /* cars2 = [
     {
       id: 0,
@@ -86,6 +89,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.offerForm = this.formBuilder.group({
       id: [null],
       title: ['', [Validators.required, Validators.maxLength(100)]],
+      photo: [],
       brand: '',
       model: '',
       description: '',
@@ -104,7 +108,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if(!offerId || offerId && offerId === ''){ // CREATION
       delete offer.index;
       //this.offers.push(offer);
-      this.offersService.createOffer(offer)
+      this.offersService.createOffer(offer, this.currentOfferPhotoFile)
       .catch(console.error);
     }
     else { // MODIFICATION
@@ -115,7 +119,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     //this.offers.push(this.offerForm.value);
     this.offerForm.reset();
-    console.log(this.offers);
+    this.currentOfferPhotoFile = null;
+    //console.log(this.offers);
+  }
+
+  onChangeOfferPhoto($event: any): void{
+
+    this.currentOfferPhotoFile = $event.target.files[0];
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(this.currentOfferPhotoFile);
+    fileReader.onloadend = (e) => {
+      this.currentOfferPhotoUrl = <string>e.target?.result;
+    }
   }
 
   onEditOffer(offer: Offer): void{

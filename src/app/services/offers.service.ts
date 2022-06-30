@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Offer } from '../interfaces/offer';
 
@@ -32,7 +33,8 @@ export class OffersService {
   offersSubject: BehaviorSubject<Offer[]> = new BehaviorSubject(<Offer[]>[]);
 
   constructor(
-    private db: AngularFireDatabase
+    private db: AngularFireDatabase,
+    private storage: AngularFireStorage
   ) {
     //this.getOffersOn(); // Pour écouter les MàJ en BDD
   }
@@ -83,16 +85,20 @@ export class OffersService {
   }
 
 
-  createOffer(offer: Offer): Promise<Offer>{
-    return new Promise((resolve, reject) => {
-      this.db.list('offers').push(offer)
-      .then(res => {
-        const createdOffer = {...offer, id: <string>res.key};
-        this.offers.push(createdOffer);
-        this.dispatchOffers();
-        resolve(createdOffer);
-      }).catch(reject);
-    })
+  async createOffer(offer: Offer, offerPhoto?: any): Promise<Offer>{
+
+    try{
+      const photoUrl = offerPhoto ? await this.uploadPhoto(offerPhoto) : '';
+      const response = this.db.list('offers').push({...offer, photo: photoUrl});
+
+      const createdOffer = {...offer, photo: photoUrl, id: <string>response.key};
+      this.offers.push(createdOffer);
+      this.dispatchOffers();
+
+      return createdOffer;
+    } catch(error) {
+      throw error;
+    }
 
     /* this.offers.push(offer);
     return this.offers; */
@@ -120,6 +126,15 @@ export class OffersService {
         this.dispatchOffers();
       }).catch(console.error);
     })
+  }
+
+  private uploadPhoto(photo: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const upload = this.storage.upload('offers/' + Date.now() + '-' + photo.name, photo);
+      upload.then((res) => {
+        resolve(res.ref.getDownloadURL());
+      }).catch(reject);
+    });
   }
 
 }
