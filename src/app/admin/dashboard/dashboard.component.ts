@@ -105,22 +105,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
     /* console.log(this.offerForm.value); */
     const offerId = this.offerForm.value.id;
     let offer = this.offerForm.value;
+
+    const offerPhotoUrl = this.offers.find(el => el.id === offerId)?.photo;
+    offer = {...offer, photo: offerPhotoUrl};
+
     if(!offerId || offerId && offerId === ''){ // CREATION
-      delete offer.index;
+      delete offer.id;
       //this.offers.push(offer);
       this.offersService.createOffer(offer, this.currentOfferPhotoFile)
       .catch(console.error);
     }
     else { // MODIFICATION
-      delete offer.index;
+      delete offer.id;
       //this.offers[offerIndex] = offer;
-      this.offersService.editOffer(offer, offerId).catch(console.error);
+      this.offersService.editOffer(offer, offerId, this.currentOfferPhotoFile).catch(console.error);
     }
 
     //this.offers.push(this.offerForm.value);
     this.offerForm.reset();
     this.currentOfferPhotoFile = null;
-    //console.log(this.offers);
+    this.currentOfferPhotoUrl = '';
   }
 
   onChangeOfferPhoto($event: any): void{
@@ -134,9 +138,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   onEditOffer(offer: Offer): void{
+    this.currentOfferPhotoUrl = offer.photo ? offer.photo : '';
     this.offerForm.setValue({
       id: offer.id ? offer.id : '',
       title: offer.title ? offer.title : '',
+      photo: '',
       brand: offer.brand ? offer.brand : '',
       model: offer.model ? offer.model : '',
       price : offer.price ? offer.price : 0,
