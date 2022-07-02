@@ -17,11 +17,14 @@
             <input type="password" class="form-control" placeholder="Au moins 8 caractères"
             id="signinPassword" formControlName="password">
           </div>
-          <div class="d-flex">
-            <button class="btn btn-primary mx-auto" type="submit"
+          <div class="d-flex flex-column">
+            <button class="btn btn-primary mx-auto mb-3" type="submit"
             [disabled]="signinForm.invalid">
               Se connecter
             </button>
+            <a class="mx-auto" [routerLink]="['/auth','forgot-password']">
+              Mot de passe oublié
+            </a>
           </div>
         </form>
       </div>
