@@ -32,7 +32,6 @@ export class SignupComponent implements OnInit {
   }
 
   onSubmitSignupForm(): void{
-    console.info("Formulaire soumis");
     this.authService.signupUser(this.signupForm.value.email, this.signupForm.value.password)
     .then(user => {
       this.router.navigate(['/admin', 'dashboard']);
