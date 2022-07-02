@@ -13,6 +13,8 @@ export class AccountComponent implements OnInit {
   currentUserSubscription!: Subscription;
   currentUser!: User;
 
+  message!: string;
+
   constructor(
     private authService: AuthService
   ) { }
@@ -31,5 +33,11 @@ export class AccountComponent implements OnInit {
   onDestroy(): void{
     this.currentUserSubscription.unsubscribe();
   }
+
+  getMessageFromChildComponent(e: string){
+    console.log('ACCOUNT COMPONENT -> ',e);
+    this.message = e;
+  }
+
 
 }
